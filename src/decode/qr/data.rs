@@ -105,6 +105,11 @@ fn alphanumeric(chomp: &mut Chomp, version: u32) -> Result<String, QRError> {
     while length > 0 {
         if length >= 2 {
             let chars = read_bits_u16(chomp, 11)?;
+            if (chars as usize / 45) > 44 {
+                return Err(QRError {
+                    msg: format!("invalid alphanumeric value"),
+                });
+            }
             result.push(ALPHANUMERIC[chars as usize / 45]);
             result.push(ALPHANUMERIC[chars as usize % 45]);
 
@@ -114,6 +119,11 @@ fn alphanumeric(chomp: &mut Chomp, version: u32) -> Result<String, QRError> {
 
         if length == 1 {
             let chars = read_bits_u16(chomp, 6)?;
+            if chars > 44 {
+                return Err(QRError {
+                    msg: format!("invalid alphanumeric value"),
+                });
+            }
             result.push(ALPHANUMERIC[chars as usize]);
 
             break;
